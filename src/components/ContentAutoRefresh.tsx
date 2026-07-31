@@ -1,0 +1,1 @@
+"use client";import {useEffect} from "react";import {useRouter} from "next/navigation";export function ContentAutoRefresh(){const router=useRouter();useEffect(()=>{const channel=new BroadcastChannel("vortex-content");channel.onmessage=()=>router.refresh();const timer=setInterval(()=>router.refresh(),30000);return()=>{channel.close();clearInterval(timer)}},[router]);return null}

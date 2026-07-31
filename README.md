@@ -33,3 +33,11 @@ Os placeholders `SEU_NUMERO_WHATSAPP`, `SEU_EMAIL`, `SEU_USUARIO_DISCORD` e `SEU
 Importe este repositório na Vercel ou execute `vercel`. O projeto não depende de variáveis de ambiente ou serviços externos para funcionar. Após publicar, atualize `siteConfig.url` com o endereço final para manter sitemap e metadados corretos.
 
 O arquivo `vercel.json` fixa o preset de framework como Next.js e a saída de build em `.next`, evitando que configurações antigas de hospedagem estática procurem uma pasta `public`.
+
+## Painel administrativo
+
+- Acesso: `/login`
+- Projetos e demonstrações são gerenciados em `/admin`.
+- Conteúdo e imagens enviados pelo painel utilizam Vercel Blob por meio de `BLOB_READ_WRITE_TOKEN`.
+- A senha do proprietário não fica em texto puro no repositório; somente o hash é utilizado na validação.
+- O login Google requer `GOOGLE_CLIENT_ID` e `GOOGLE_CLIENT_SECRET`. Use como URI de redirecionamento: `https://vortex-solution-lilac.vercel.app/api/auth/google/callback`.

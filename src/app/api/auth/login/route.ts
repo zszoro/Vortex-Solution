@@ -1,0 +1,2 @@
+import { NextResponse } from "next/server";import { createSessionToken,validateOwner } from "@/lib/auth";
+export async function POST(req:Request){const {email,password}=await req.json();if(!validateOwner(String(email||""),String(password||"")))return NextResponse.json({error:"E-mail ou senha inválidos."},{status:401});const res=NextResponse.json({ok:true});res.cookies.set("vortex_session",createSessionToken(),{httpOnly:true,secure:process.env.NODE_ENV==="production",sameSite:"lax",path:"/",maxAge:60*60*24*7});return res}

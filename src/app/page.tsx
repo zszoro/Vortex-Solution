@@ -1,4 +1,3 @@
-import Link from "next/link";
 import * as Icons from "lucide-react";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
@@ -7,7 +6,10 @@ import { SectionTitle } from "@/components/SectionTitle";
 import { Accordion } from "@/components/Accordion";
 import { ContactForm } from "@/components/ContactForm";
 import { ProjectGrid } from "@/components/ProjectGrid";
-import { demos, plans, services, siteConfig } from "@/data/site";
+import { DemoCarousel } from "@/components/DemoCarousel";
+import { ContentAutoRefresh } from "@/components/ContentAutoRefresh";
+import { plans, services, siteConfig } from "@/data/site";
+import { getContent } from "@/lib/content";
 const iconMap = {
   Globe2: Icons.Globe2,
   PanelsTopLeft: Icons.PanelsTopLeft,
@@ -60,9 +62,12 @@ const integrations = [
     ],
   },
 ];
-export default function Home() {
+export const dynamic = "force-dynamic";
+export default async function Home() {
+  const content = await getContent();
   return (
     <>
+      <ContentAutoRefresh />
       <Header />
       <main>
         <section id="inicio" className="hero">
@@ -407,7 +412,7 @@ export default function Home() {
                 text="Cases demonstrativos criados para apresentar abordagens, estilos e possibilidades. Não representam clientes reais."
               />
             </Reveal>
-            <ProjectGrid />
+            <ProjectGrid projects={content.projects} />
           </div>
         </section>
         <section id="demonstracoes" className="section container">
@@ -418,28 +423,7 @@ export default function Home() {
               text="Explore catálogos, use a busca, abra detalhes e simule ações como em um produto real."
             />
           </Reveal>
-          <div className="demo-grid">
-            {demos.map((d, i) => (
-              <Link
-                href={`/demonstracoes/${d.slug}`}
-                key={d.slug}
-                style={{ "--accent": d.accent } as React.CSSProperties}
-              >
-                <span>0{i + 1} / DEMO</span>
-                <div className="demo-thumb">
-                  <i />
-                  <i />
-                  <i />
-                  <b>{d.name}</b>
-                </div>
-                <h3>{d.type}</h3>
-                <p>{d.tagline}</p>
-                <em>
-                  Abrir demonstração <Icons.ArrowUpRight />
-                </em>
-              </Link>
-            ))}
-          </div>
+          <DemoCarousel demos={content.demos} />
         </section>
         <section id="processo" className="section dark-section">
           <div className="container">

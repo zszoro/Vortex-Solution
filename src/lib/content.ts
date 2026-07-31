@@ -89,17 +89,28 @@ export const defaultContent: SiteContent = {
 };
 
 const blobName = "vortex/content.json";
+export function getBlobToken() {
+  return (
+    process.env.BLOB_READ_WRITE_TOKEN ||
+    Object.entries(process.env).find(
+      ([key, value]) =>
+        Boolean(value) && key.includes("BLOB") && key.endsWith("READ_WRITE_TOKEN"),
+    )?.[1]
+  );
+}
 export async function getContent(): Promise<SiteContent> {
-  if (!process.env.BLOB_READ_WRITE_TOKEN) return defaultContent;
+  const token = getBlobToken();
+  if (!token) return defaultContent;
   try {
-    const meta = await head(blobName);
+    const meta = await head(blobName, { token });
     const res = await fetch(meta.url, { cache: "no-store" });
     if (res.ok) return await res.json();
   } catch {}
   return defaultContent;
 }
 export async function saveContent(content: SiteContent) {
-  if (!process.env.BLOB_READ_WRITE_TOKEN)
+  const token = getBlobToken();
+  if (!token)
     throw new Error("BLOB_NOT_CONFIGURED");
   const next = { ...content, updatedAt: new Date().toISOString() };
   await put(blobName, JSON.stringify(next), {
@@ -107,6 +118,7 @@ export async function saveContent(content: SiteContent) {
     addRandomSuffix: false,
     allowOverwrite: true,
     contentType: "application/json",
+    token,
   });
   return next;
 }

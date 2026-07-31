@@ -31,3 +31,5 @@ Os placeholders `SEU_NUMERO_WHATSAPP`, `SEU_EMAIL`, `SEU_USUARIO_DISCORD` e `SEU
 ## Deploy na Vercel
 
 Importe este repositório na Vercel ou execute `vercel`. O projeto não depende de variáveis de ambiente ou serviços externos para funcionar. Após publicar, atualize `siteConfig.url` com o endereço final para manter sitemap e metadados corretos.
+
+O arquivo `vercel.json` fixa o preset de framework como Next.js e a saída de build em `.next`, evitando que configurações antigas de hospedagem estática procurem uma pasta `public`.

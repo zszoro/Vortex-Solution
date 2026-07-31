@@ -95,7 +95,10 @@ export function getBlobToken() {
     Object.entries(process.env).find(
       ([key, value]) =>
         Boolean(value) && key.includes("BLOB") && key.endsWith("READ_WRITE_TOKEN"),
-    )?.[1]
+    )?.[1] ||
+    Object.values(process.env).find((value) =>
+      value?.startsWith("vercel_blob_rw_"),
+    )
   );
 }
 export async function getContent(): Promise<SiteContent> {

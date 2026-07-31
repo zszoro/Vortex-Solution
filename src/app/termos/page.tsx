@@ -1,0 +1,1 @@
+import type {Metadata} from "next";import {LegalPage} from "@/components/LegalPage";export const metadata:Metadata={title:"Termos de Uso",description:"Termos de uso do site da Vortex Studio."};export default function Page(){return <LegalPage type="termos"/>}

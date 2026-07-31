@@ -1,0 +1,1 @@
+import type {Metadata} from "next";import {LegalPage} from "@/components/LegalPage";export const metadata:Metadata={title:"Política de Privacidade",description:"Política de privacidade da Vortex Studio."};export default function Page(){return <LegalPage type="privacidade"/>}

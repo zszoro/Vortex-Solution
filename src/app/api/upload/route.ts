@@ -6,7 +6,7 @@ import { getBlobAuth } from "@/lib/content";
 export async function POST(req: Request) {
   if (!(await isAuthenticated()))
     return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
-  const auth = getBlobAuth();
+  const auth = await getBlobAuth();
   if (!auth)
     return NextResponse.json(
       { error: "Vercel Blob não configurado" },

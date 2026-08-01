@@ -1,4 +1,5 @@
 import { head, put } from "@vercel/blob";
+import { getVercelOidcToken } from "@vercel/oidc";
 import { demos as seedDemos, projects as seedProjects } from "@/data/site";
 
 export type ManagedProject = {
@@ -89,7 +90,7 @@ export const defaultContent: SiteContent = {
 };
 
 const blobName = "vortex/content.json";
-export function getBlobAuth() {
+export async function getBlobAuth() {
   const token =
     process.env.BLOB_READ_WRITE_TOKEN ||
     Object.entries(process.env).find(
@@ -100,15 +101,19 @@ export function getBlobAuth() {
       value?.startsWith("vercel_blob_rw_"),
     );
   if (token) return { token };
-  if (process.env.VERCEL_OIDC_TOKEN && process.env.BLOB_STORE_ID)
+  if (process.env.BLOB_STORE_ID) {
+    const oidcToken =
+      process.env.VERCEL_OIDC_TOKEN || (await getVercelOidcToken());
+    if (oidcToken)
     return {
-      oidcToken: process.env.VERCEL_OIDC_TOKEN,
+      oidcToken,
       storeId: process.env.BLOB_STORE_ID,
     };
+  }
   return null;
 }
 export async function getContent(): Promise<SiteContent> {
-  const auth = getBlobAuth();
+  const auth = await getBlobAuth();
   if (!auth) return defaultContent;
   try {
     const meta = await head(blobName, auth);
@@ -118,7 +123,7 @@ export async function getContent(): Promise<SiteContent> {
   return defaultContent;
 }
 export async function saveContent(content: SiteContent) {
-  const auth = getBlobAuth();
+  const auth = await getBlobAuth();
   if (!auth) throw new Error("BLOB_NOT_CONFIGURED");
   const next = { ...content, updatedAt: new Date().toISOString() };
   await put(blobName, JSON.stringify(next), {

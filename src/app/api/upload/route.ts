@@ -1,13 +1,13 @@
 import { put } from "@vercel/blob";
 import { NextResponse } from "next/server";
 import { isAuthenticated } from "@/lib/auth";
-import { getBlobToken } from "@/lib/content";
+import { getBlobAuth } from "@/lib/content";
 
 export async function POST(req: Request) {
   if (!(await isAuthenticated()))
     return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
-  const token = getBlobToken();
-  if (!token)
+  const auth = getBlobAuth();
+  if (!auth)
     return NextResponse.json(
       { error: "Vercel Blob não configurado" },
       { status: 503 },
@@ -21,7 +21,7 @@ export async function POST(req: Request) {
   const blob = await put(`vortex/uploads/${Date.now()}-${file.name}`, file, {
     access: "public",
     addRandomSuffix: true,
-    token,
+    ...auth,
   });
   return NextResponse.json({ url: blob.url });
 }

@@ -89,8 +89,8 @@ export const defaultContent: SiteContent = {
 };
 
 const blobName = "vortex/content.json";
-export function getBlobToken() {
-  return (
+export function getBlobAuth() {
+  const token =
     process.env.BLOB_READ_WRITE_TOKEN ||
     Object.entries(process.env).find(
       ([key, value]) =>
@@ -98,30 +98,35 @@ export function getBlobToken() {
     )?.[1] ||
     Object.values(process.env).find((value) =>
       value?.startsWith("vercel_blob_rw_"),
-    )
-  );
+    );
+  if (token) return { token };
+  if (process.env.VERCEL_OIDC_TOKEN && process.env.BLOB_STORE_ID)
+    return {
+      oidcToken: process.env.VERCEL_OIDC_TOKEN,
+      storeId: process.env.BLOB_STORE_ID,
+    };
+  return null;
 }
 export async function getContent(): Promise<SiteContent> {
-  const token = getBlobToken();
-  if (!token) return defaultContent;
+  const auth = getBlobAuth();
+  if (!auth) return defaultContent;
   try {
-    const meta = await head(blobName, { token });
+    const meta = await head(blobName, auth);
     const res = await fetch(meta.url, { cache: "no-store" });
     if (res.ok) return await res.json();
   } catch {}
   return defaultContent;
 }
 export async function saveContent(content: SiteContent) {
-  const token = getBlobToken();
-  if (!token)
-    throw new Error("BLOB_NOT_CONFIGURED");
+  const auth = getBlobAuth();
+  if (!auth) throw new Error("BLOB_NOT_CONFIGURED");
   const next = { ...content, updatedAt: new Date().toISOString() };
   await put(blobName, JSON.stringify(next), {
     access: "public",
     addRandomSuffix: false,
     allowOverwrite: true,
     contentType: "application/json",
-    token,
+    ...auth,
   });
   return next;
 }

@@ -1,4 +1,4 @@
-import { head, put } from "@vercel/blob";
+import { get, put } from "@vercel/blob";
 import { getVercelOidcToken } from "@vercel/oidc";
 import { demos as seedDemos, projects as seedProjects } from "@/data/site";
 
@@ -116,9 +116,13 @@ export async function getContent(): Promise<SiteContent> {
   const auth = await getBlobAuth();
   if (!auth) return defaultContent;
   try {
-    const meta = await head(blobName, auth);
-    const res = await fetch(meta.url, { cache: "no-store" });
-    if (res.ok) return await res.json();
+    const result = await get(blobName, {
+      access: "private",
+      useCache: false,
+      ...auth,
+    });
+    if (result?.statusCode === 200)
+      return await new Response(result.stream).json();
   } catch {}
   return defaultContent;
 }
@@ -127,7 +131,7 @@ export async function saveContent(content: SiteContent) {
   if (!auth) throw new Error("BLOB_NOT_CONFIGURED");
   const next = { ...content, updatedAt: new Date().toISOString() };
   await put(blobName, JSON.stringify(next), {
-    access: "public",
+    access: "private",
     addRandomSuffix: false,
     allowOverwrite: true,
     contentType: "application/json",

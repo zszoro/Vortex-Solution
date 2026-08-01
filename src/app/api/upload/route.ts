@@ -19,9 +19,11 @@ export async function POST(req: Request) {
   if (!file.type.startsWith("image/"))
     return NextResponse.json({ error: "Envie uma imagem" }, { status: 400 });
   const blob = await put(`vortex/uploads/${Date.now()}-${file.name}`, file, {
-    access: "public",
+    access: "private",
     addRandomSuffix: true,
     ...auth,
   });
-  return NextResponse.json({ url: blob.url });
+  return NextResponse.json({
+    url: `/api/media?path=${encodeURIComponent(blob.pathname)}`,
+  });
 }

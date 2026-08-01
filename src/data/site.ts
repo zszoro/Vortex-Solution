@@ -8,9 +8,9 @@ export const siteConfig = {
 };
 
 export const nav = [
-  ["Início", "#inicio"], ["Sobre", "#sobre"], ["Serviços", "#servicos"],
-  ["Planos", "#planos"], ["Projetos", "#projetos"], ["Demonstrações", "#demonstracoes"],
-  ["Processo", "#processo"], ["FAQ", "#faq"], ["Contato", "#contato"],
+  ["Início", "#inicio"], ["Projetos", "#projetos"], ["Demonstrações", "#demonstracoes"],
+  ["Sobre", "#sobre"], ["Serviços", "#servicos"], ["Planos", "#planos"],
+  ["Processo", "#processo"], ["FAQ", "#faq"],
 ] as const;
 
 export const services = [
@@ -59,5 +59,5 @@ export const faq = [
   ["Posso contratar suporte após a entrega?","Sim. Oferecemos planos de suporte e evolução contínua sob medida."],
   ["Vocês desenvolvem sistemas totalmente personalizados?","Sim. Criamos APIs, dashboards, automações, aplicativos e plataformas adaptadas à operação."],
   ["O código e o domínio ficam em meu nome?","Sim. A titularidade e os acessos são organizados de forma transparente no contrato."],
-  ["Como solicito um orçamento?","Preencha o formulário ao final da página ou fale conosco pelo botão do WhatsApp."],
+  ["Como solicito um orçamento?","Clique em Realizar orçamento, preencha as duas etapas e envie o resumo organizado diretamente pelo WhatsApp."],
 ] as const;

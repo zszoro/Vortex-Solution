@@ -1,7 +1,6 @@
 "use client";
 import { useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { ArrowUpRight, ChevronDown, Eye } from "lucide-react";
 import type { ManagedProject } from "@/lib/content";
 export function ProjectGrid({ projects }: { projects: ManagedProject[] }) {
@@ -32,11 +31,11 @@ export function ProjectGrid({ projects }: { projects: ManagedProject[] }) {
           <article className="project-card" key={p.slug}>
             <div className={`project-art ${p.tone}`}>
               {p.image && (
-                <Image
+                // Imagens do painel podem vir de qualquer domínio ou do proxy do Blob.
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
                   src={p.image}
                   alt={p.name}
-                  fill
-                  sizes="(max-width:760px) 100vw, 50vw"
                 />
               )}
               <span>PROJETO CONCEITUAL</span>

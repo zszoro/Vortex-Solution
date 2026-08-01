@@ -4,7 +4,7 @@ import { Footer } from "@/components/Footer";
 import { Reveal } from "@/components/Reveal";
 import { SectionTitle } from "@/components/SectionTitle";
 import { Accordion } from "@/components/Accordion";
-import { ContactForm } from "@/components/ContactForm";
+import { QuoteModal } from "@/components/QuoteModal";
 import { ProjectGrid } from "@/components/ProjectGrid";
 import { DemoCarousel } from "@/components/DemoCarousel";
 import { ContentAutoRefresh } from "@/components/ContentAutoRefresh";
@@ -22,46 +22,6 @@ const iconMap = {
   Braces: Icons.Braces,
   Boxes: Icons.Boxes,
 };
-const integrations = [
-  {
-    title: "Experiências",
-    icon: Icons.LayoutTemplate,
-    items: [
-      "Sites institucionais",
-      "Landing pages",
-      "Lojas virtuais",
-      "Aplicativos",
-      "Painéis administrativos",
-    ],
-  },
-  {
-    title: "Comércio",
-    icon: Icons.CreditCard,
-    items: ["Mercado Pago", "PIX", "Cartão", "Checkout", "Marketplace"],
-  },
-  {
-    title: "Plataforma",
-    icon: Icons.Database,
-    items: [
-      "Firebase",
-      "Banco de dados",
-      "API própria",
-      "Google Login",
-      "Facebook Login",
-    ],
-  },
-  {
-    title: "Crescimento",
-    icon: Icons.TrendingUp,
-    items: [
-      "SEO",
-      "Analytics",
-      "Push Notifications",
-      "Automações",
-      "Hospedagem",
-    ],
-  },
-];
 export const dynamic = "force-dynamic";
 export default async function Home() {
   const content = await getContent();
@@ -90,8 +50,8 @@ export default async function Home() {
                 digitais rápidas, modernas e preparadas para crescer.
               </p>
               <div className="hero-actions">
-                <a className="btn primary" href="#contato">
-                  Solicitar orçamento <Icons.ArrowRight />
+                <a className="btn primary" href="#orcamento" data-quote>
+                  Realizar orçamento <Icons.ArrowRight />
                 </a>
                 <a className="btn ghost" href="#projetos">
                   Explorar projetos <Icons.ArrowDownRight />
@@ -184,6 +144,28 @@ export default async function Home() {
             <span key={x}>{x}</span>
           ))}
         </div>
+        <section id="projetos" className="section dark-section home-showcase">
+          <div className="container">
+            <Reveal>
+              <SectionTitle
+                eyebrow="Projetos conceituais"
+                title="Experiências que tornam a tecnologia tangível."
+                text="Cases demonstrativos criados para apresentar abordagens, estilos e possibilidades. Não representam clientes reais."
+              />
+            </Reveal>
+            <ProjectGrid projects={content.projects} />
+          </div>
+        </section>
+        <section id="demonstracoes" className="section container home-showcase">
+          <Reveal>
+            <SectionTitle
+              eyebrow="Veja funcionando"
+              title="Demonstrações navegáveis, não apenas telas bonitas."
+              text="Explore catálogos, use a busca, abra detalhes e simule ações como em um produto real."
+            />
+          </Reveal>
+          <DemoCarousel demos={content.demos} />
+        </section>
         <section id="sobre" className="section container">
           <Reveal>
             <div className="about-grid">
@@ -248,94 +230,13 @@ export default async function Home() {
                       <I />
                       <h3>{name}</h3>
                       <p>{desc}</p>
-                      <a href="#contato" aria-label={`Solicitar ${name}`}>
+                      <a href="#orcamento" data-quote aria-label={`Solicitar ${name}`}>
                         Explorar solução <Icons.ArrowUpRight />
                       </a>
                     </article>
                   </Reveal>
                 );
               })}
-            </div>
-          </div>
-        </section>
-        <section className="section container">
-          <Reveal>
-            <SectionTitle
-              eyebrow="Por que a Vortex"
-              title="Engenharia, design e negócio na mesma direção."
-            />
-          </Reveal>
-          <div className="bento">
-            <article className="bento-main">
-              <span>VELOCIDADE COM MÉTODO</span>
-              <h3>Entregas rápidas sem atalhos na qualidade.</h3>
-              <p>
-                Processos objetivos, checkpoints claros e uma base tecnológica
-                moderna reduzem o caminho entre ideia e resultado.
-              </p>
-              <div className="speed">
-                <i />
-                <i />
-                <i />
-                <i />
-                <i />
-              </div>
-            </article>
-            <article>
-              <Icons.CodeXml />
-              <h3>Código limpo</h3>
-              <p>Organizado para evoluir sem virar um problema no futuro.</p>
-            </article>
-            <article>
-              <Icons.Palette />
-              <h3>Design exclusivo</h3>
-              <p>
-                Interfaces construídas para sua marca, não adaptadas de um
-                molde.
-              </p>
-            </article>
-            <article className="wide">
-              <div>
-                <Icons.ShieldCheck />
-                <h3>Segurança desde a base</h3>
-              </div>
-              <span>Boas práticas</span>
-              <span>Atualizações</span>
-              <span>Escalabilidade</span>
-            </article>
-            <article className="wide">
-              <div>
-                <Icons.Gauge />
-                <h3>Operação completa</h3>
-              </div>
-              <span>Painel</span>
-              <span>Checkout</span>
-              <span>Integrações</span>
-              <span>Suporte</span>
-            </article>
-          </div>
-        </section>
-        <section className="section dark-section">
-          <div className="container">
-            <Reveal>
-              <SectionTitle
-                eyebrow="Recursos e integrações"
-                title="Tudo conectado. Tudo pronto para funcionar."
-                text="Combinamos as ferramentas certas em uma solução simples de operar e preparada para crescer."
-              />
-            </Reveal>
-            <div className="integration-grid">
-              {integrations.map(({ title, icon: I, items }) => (
-                <article key={title}>
-                  <I />
-                  <h3>{title}</h3>
-                  {items.map((x) => (
-                    <span key={x}>
-                      <Icons.Check /> {x}
-                    </span>
-                  ))}
-                </article>
-              ))}
             </div>
           </div>
         </section>
@@ -370,9 +271,10 @@ export default async function Home() {
                 </ul>
                 <a
                   className={p.featured ? "btn primary" : "btn ghost"}
-                  href="#contato"
+                  href="#orcamento"
+                  data-quote
                 >
-                  Solicitar orçamento <Icons.ArrowRight />
+                  Realizar orçamento <Icons.ArrowRight />
                 </a>
               </article>
             ))}
@@ -402,28 +304,6 @@ export default async function Home() {
               </div>
             ))}
           </div>
-        </section>
-        <section id="projetos" className="section dark-section">
-          <div className="container">
-            <Reveal>
-              <SectionTitle
-                eyebrow="Projetos conceituais"
-                title="Experiências que tornam a tecnologia tangível."
-                text="Cases demonstrativos criados para apresentar abordagens, estilos e possibilidades. Não representam clientes reais."
-              />
-            </Reveal>
-            <ProjectGrid projects={content.projects} />
-          </div>
-        </section>
-        <section id="demonstracoes" className="section container">
-          <Reveal>
-            <SectionTitle
-              eyebrow="Veja funcionando"
-              title="Demonstrações navegáveis, não apenas telas bonitas."
-              text="Explore catálogos, use a busca, abra detalhes e simule ações como em um produto real."
-            />
-          </Reveal>
-          <DemoCarousel demos={content.demos} />
         </section>
         <section id="processo" className="section dark-section">
           <div className="container">
@@ -535,38 +415,8 @@ export default async function Home() {
             <Accordion />
           </div>
         </section>
-        <section id="contato" className="section contact-section">
-          <div className="container contact-grid">
-            <div>
-              <span className="eyebrow">Seu próximo projeto começa aqui</span>
-              <h2>Vamos construir algo que mova o seu negócio?</h2>
-              <p>
-                Conte o que você precisa. Organizamos as possibilidades e
-                retornamos com o melhor caminho para transformar sua ideia em
-                produto.
-              </p>
-              <div className="contact-links">
-                <a href={`https://wa.me/${siteConfig.whatsapp}`}>
-                  <Icons.MessageCircle /> WhatsApp{" "}
-                  <span>{siteConfig.whatsapp}</span>
-                </a>
-                <a href={`mailto:${siteConfig.email}`}>
-                  <Icons.Mail /> E-mail <span>{siteConfig.email}</span>
-                </a>
-                <a href="#">
-                  <Icons.MessagesSquare /> Discord{" "}
-                  <span>{siteConfig.discord}</span>
-                </a>
-                <a href="#">
-                  <Icons.Instagram /> Instagram{" "}
-                  <span>{siteConfig.instagram}</span>
-                </a>
-              </div>
-            </div>
-            <ContactForm />
-          </div>
-        </section>
       </main>
+      <QuoteModal />
       <a
         className="whatsapp"
         href={`https://wa.me/${siteConfig.whatsapp}?text=${encodeURIComponent("Olá! Conheci a Vortex Studio pelo site e desejo solicitar um orçamento.")}`}

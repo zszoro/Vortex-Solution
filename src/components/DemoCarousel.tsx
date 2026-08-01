@@ -1,6 +1,5 @@
 "use client";
 import { useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight, ChevronLeft, ChevronRight } from "lucide-react";
 import type { ManagedDemo } from "@/lib/content";
@@ -36,7 +35,9 @@ export function DemoCarousel({ demos }: { demos: ManagedDemo[] }) {
             </span>
             <div className="demo-thumb">
               {d.image && (
-                <Image src={d.image} alt={d.name} fill sizes="220px" />
+                // O CMS aceita URLs externas e arquivos persistidos no Blob.
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={d.image} alt={d.name} />
               )}
               <b>{d.name}</b>
             </div>

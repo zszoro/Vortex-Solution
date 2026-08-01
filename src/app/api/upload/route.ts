@@ -23,7 +23,9 @@ export async function POST(req: Request) {
     addRandomSuffix: true,
     ...auth,
   });
+  const origin = process.env.NEXT_PUBLIC_SITE_URL || new URL(req.url).origin;
   return NextResponse.json({
-    url: `/api/media?path=${encodeURIComponent(blob.pathname)}`,
+    url: `${origin}/api/media?path=${encodeURIComponent(blob.pathname)}`,
+    pathname: blob.pathname,
   });
 }

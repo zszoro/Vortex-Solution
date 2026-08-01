@@ -8,6 +8,7 @@ import { QuoteModal } from "@/components/QuoteModal";
 import { ProjectGrid } from "@/components/ProjectGrid";
 import { DemoCarousel } from "@/components/DemoCarousel";
 import { ContentAutoRefresh } from "@/components/ContentAutoRefresh";
+import { WhatsAppIcon } from "@/components/WhatsAppIcon";
 import { plans, services, siteConfig } from "@/data/site";
 import { getContent } from "@/lib/content";
 const iconMap = {
@@ -424,7 +425,7 @@ export default async function Home() {
         rel="noreferrer"
         aria-label="Falar pelo WhatsApp"
       >
-        <Icons.MessageCircle />
+        <WhatsAppIcon />
       </a>
       <Footer />
     </>

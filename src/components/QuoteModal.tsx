@@ -1,8 +1,9 @@
 "use client";
 
 import { FormEvent, useEffect, useState } from "react";
-import { ArrowLeft, ArrowRight, Building2, Check, Globe2, X } from "lucide-react";
+import { ArrowLeft, ArrowRight, Building2, Check, Globe2, LoaderCircle, X } from "lucide-react";
 import { siteConfig } from "@/data/site";
+import { WhatsAppIcon } from "@/components/WhatsAppIcon";
 
 const projectTypes = [
   "Site institucional",
@@ -18,18 +19,22 @@ const projectTypes = [
 ];
 
 const hostingOptions = [
-  { id: "vercel", name: "Vercel", detail: "Endereço gratuito .vercel.app", price: "R$ 30,00/mês" },
-  { id: "com", name: "Domínio .com", detail: "Domínio personalizado internacional", price: "R$ 79,90/mês" },
-  { id: "combr", name: "Domínio .com.br", detail: "Domínio personalizado brasileiro", price: "R$ 69,90/mês" },
-  { id: "net", name: "Domínio .net", detail: "Domínio clássico para tecnologia", price: "R$ 89,90/mês" },
-  { id: "app", name: "Domínio .app", detail: "Domínio moderno para aplicativos", price: "R$ 129,90/mês" },
-  { id: "io", name: "Domínio .io", detail: "Domínio premium para produtos digitais", price: "R$ 159,90/mês" },
+  { id: "vercel", suffix: "vercel.app", name: "Vercel", detail: "Hospedagem com endereço Vercel", price: "R$ 30,00/mês" },
+  { id: "com", suffix: "com", name: "Domínio .com", detail: "Domínio personalizado internacional", price: "R$ 79,90/mês" },
+  { id: "combr", suffix: "com.br", name: "Domínio .com.br", detail: "Domínio personalizado brasileiro", price: "R$ 69,90/mês" },
+  { id: "net", suffix: "net", name: "Domínio .net", detail: "Domínio clássico para tecnologia", price: "R$ 89,90/mês" },
+  { id: "app", suffix: "app", name: "Domínio .app", detail: "Domínio moderno para aplicativos", price: "R$ 129,90/mês" },
+  { id: "io", suffix: "io", name: "Domínio .io", detail: "Domínio premium para produtos digitais", price: "R$ 159,90/mês" },
 ];
+
+type DomainStatus = "idle" | "checking" | "available" | "taken" | "unknown";
 
 export function QuoteModal() {
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState(1);
   const [hosting, setHosting] = useState("vercel");
+  const [domainName, setDomainName] = useState("");
+  const [domainStatuses, setDomainStatuses] = useState<Record<string, DomainStatus>>({});
 
   useEffect(() => {
     const click = (event: MouseEvent) => {
@@ -48,6 +53,25 @@ export function QuoteModal() {
     return () => { document.body.style.overflow = ""; };
   }, [open]);
 
+  useEffect(() => {
+    const clean = domainName.toLowerCase().replace(/[^a-z0-9-]/g, "").replace(/^-+|-+$/g, "");
+    if (!open || step !== 2 || clean.length < 2) return;
+    const controller = new AbortController();
+    const timer = window.setTimeout(async () => {
+      try {
+        const response = await fetch(`/api/domain-check?name=${encodeURIComponent(clean)}`, { signal: controller.signal });
+        if (!response.ok) throw new Error("domain-check");
+        const data = await response.json() as { results: Record<string, { status: DomainStatus }> };
+        setDomainStatuses(Object.fromEntries(Object.entries(data.results).map(([suffix, value]) => [suffix, value.status])));
+      } catch (error) {
+        if ((error as Error).name !== "AbortError") {
+          setDomainStatuses(Object.fromEntries(hostingOptions.map((item) => [item.suffix, "unknown"])));
+        }
+      }
+    }, 550);
+    return () => { window.clearTimeout(timer); controller.abort(); };
+  }, [domainName, open, step]);
+
   function next(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setStep(2);
@@ -57,6 +81,7 @@ export function QuoteModal() {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     const selected = hostingOptions.find((item) => item.id === hosting)!;
+    const selectedDomain = `${domainName || "meusite"}.${selected.suffix}`;
     const message = [
       "*NOVO PEDIDO DE ORÇAMENTO — VORTEX STUDIO*",
       "",
@@ -72,6 +97,7 @@ export function QuoteModal() {
       "",
       "*HOSPEDAGEM E DOMÍNIO*",
       `Opção: ${selected.name}`,
+      `Endereço desejado: ${selectedDomain}`,
       `Detalhes: ${selected.detail}`,
       `Mensalidade de referência: ${selected.price}`,
       "",
@@ -110,17 +136,22 @@ export function QuoteModal() {
             <label>Faixa de investimento<input name="investimento" required placeholder="Escreva o valor ou a faixa que pretende investir" /></label>
           </div>
           <div className={step === 2 ? "quote-step active" : "quote-step"}>
-            <div className="quote-hosting-intro"><Globe2 /><div><b>Escolha a hospedagem e o endereço</b><p>O valor final do desenvolvimento será informado pela Vortex.</p></div></div>
+            <div className="quote-hosting-intro"><Globe2 /><div><b>Escolha a hospedagem e o endereço</b><p>Digite o nome uma vez para conferir todas as extensões ao mesmo tempo.</p></div></div>
+            <label className="domain-name-field">Nome desejado para o site
+              <div><Globe2 /><input value={domainName} onChange={(event) => { const value = event.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ""); setDomainName(value); setDomainStatuses(value.length >= 2 ? Object.fromEntries(hostingOptions.map((item) => [item.suffix, "checking"])) : {}); }} required={step === 2} minLength={2} placeholder="minhaempresa" /><span>.domínio</span></div>
+              <small>A disponibilidade é consultada em tempo real e pode mudar até o registro.</small>
+            </label>
             <div className="hosting-options">
-              {hostingOptions.map((item) => <label className={hosting === item.id ? "selected" : ""} key={item.id}>
+              {hostingOptions.map((item) => { const status = domainStatuses[item.suffix] || "idle"; return <label className={hosting === item.id ? "selected" : ""} key={item.id}>
                 <input type="radio" name="hosting" value={item.id} checked={hosting === item.id} onChange={() => setHosting(item.id)} />
-                <Building2 /><span><b>{item.name}</b><small>{item.detail}</small></span><strong>{item.price}</strong><Check />
-              </label>)}
+                <Building2 /><span><b>{domainName || "meusite"}.{item.suffix}</b><small>{item.detail}</small></span><strong>{item.price}</strong><Check />
+                <em className={`domain-status ${status}`}>{status === "checking" ? <LoaderCircle /> : <i />}{status === "available" ? "Disponível" : status === "taken" ? "Indisponível" : status === "unknown" ? "Não confirmado" : "Digite o nome"}</em>
+              </label>})}
             </div>
           </div>
           <footer>
             {step === 2 && <button className="btn ghost" type="button" onClick={() => setStep(1)}><ArrowLeft /> Voltar</button>}
-            <button className="btn primary" type="submit">{step === 1 ? <>Continuar <ArrowRight /></> : <>Enviar orçamento pelo WhatsApp <ArrowRight /></>}</button>
+            <button className="btn primary" type="submit">{step === 1 ? <>Continuar <ArrowRight /></> : <><WhatsAppIcon /> Enviar orçamento pelo WhatsApp</>}</button>
           </footer>
         </form>
       </section>

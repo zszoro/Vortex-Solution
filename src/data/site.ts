@@ -2,7 +2,7 @@ export const siteConfig = {
   name: "Vortex Studio",
   url: "https://vortex-solution-lilac.vercel.app",
   email: "SEU_EMAIL",
-  whatsapp: "SEU_NUMERO_WHATSAPP",
+  whatsapp: "5512992025025",
   discord: "SEU_USUARIO_DISCORD",
   instagram: "SEU_INSTAGRAM",
 };
